@@ -128,6 +128,7 @@ static bool
 			return true;
 		case 0x16u:    // ??
 		case 0x21u:
+			strtcpy(deviceQuirks.deviceName, "Unknown!", sizeof(deviceQuirks.deviceName));
 			return true;
 		case 0x54u:    // KV
 		case 0x2Au:
@@ -144,6 +145,7 @@ static bool
 		case 0x0Cu:
 		case 0x0Du:
 		case 0x99u:
+			strtcpy(deviceQuirks.deviceName, "Unknown!", sizeof(deviceQuirks.deviceName));
 			return true;
 		case 0xDDu:    // KT2 AUS
 			strtcpy(deviceQuirks.deviceName, "Basic", sizeof(deviceQuirks.deviceName));
@@ -151,6 +153,7 @@ static bool
 			strtcpy(deviceQuirks.devicePlatform, "Wario", sizeof(deviceQuirks.devicePlatform));
 			return true;
 		default:
+			strtcpy(deviceQuirks.deviceName, "Unidentified!", sizeof(deviceQuirks.deviceName));
 			return false;
 	}
 }
@@ -382,8 +385,42 @@ static bool
 			strtcpy(deviceQuirks.deviceCodename, "SeaBreeze", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Bellatrix4", sizeof(deviceQuirks.devicePlatform));
 			return true;
-		default:
+		case 0x12F0u:    // KS3
+		case 0x12EEu:
+		case 0x12F4u:
+		case 0x11E8u:
+		case 0x11EAu:
+		case 0x10A4u:
+			// TODO: Double-check this!
+			deviceQuirks.isMTK         = true;
+			deviceQuirks.hasEclipseWfm = true;
+			deviceQuirks.screenDPI     = 300U;
+			strtcpy(deviceQuirks.deviceName, "Scribe 3", sizeof(deviceQuirks.deviceName));
+			strtcpy(deviceQuirks.deviceCodename, "Paloma", sizeof(deviceQuirks.deviceCodename));
+			strtcpy(deviceQuirks.devicePlatform, "Platpa6", sizeof(deviceQuirks.devicePlatform));
+			return true;
+		case 0x13BFu:    // KS CS
+		case 0x12EFu:
+		case 0x12F1u:
+		case 0x11E9u:
+		case 0x11EBu:
+		case 0x10D7u:
+			// TODO: Double-check this!
+			deviceQuirks.isMTK              = true;
+			deviceQuirks.isKindleBellatrix4 = true;
+			deviceQuirks.hasEclipseWfm      = true;
+			deviceQuirks.screenDPI          = 300U;
+			deviceQuirks.hasColorPanel      = true;
+			strtcpy(deviceQuirks.deviceName, "Scribe ColorSoft", sizeof(deviceQuirks.deviceName));
+			strtcpy(deviceQuirks.deviceCodename, "Calvados", sizeof(deviceQuirks.deviceCodename));
+			strtcpy(deviceQuirks.devicePlatform, "Platcs8", sizeof(deviceQuirks.devicePlatform));
+			return true;
+		case 0x146Cu:    // ??
+		case 0x4FB9u:
 			strtcpy(deviceQuirks.deviceName, "Unknown!", sizeof(deviceQuirks.deviceName));
+			return true;
+		default:
+			strtcpy(deviceQuirks.deviceName, "Unidentified!", sizeof(deviceQuirks.deviceName));
 			return false;
 	}
 }
@@ -651,6 +688,8 @@ static void
 
 	// Store the device ID...
 	deviceQuirks.deviceId                   = kobo_id;
+	// We're a Kobo unless proven otherwise ;)
+	deviceQuirks.isTolino                   = false;
 	// HW invert should *generally* be safe on Kobo, with a few exceptions...
 	deviceQuirks.canHWInvert                = true;
 	// NOTE: Shaky assumption that almost everything follows the same rotation scheme, with:
@@ -735,6 +774,7 @@ static void
 			strtcpy(deviceQuirks.deviceName, "Shine 2HD", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Shine2", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Mark 6", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_KOBO_TOUCH_2:    // Touch 2.0 (pika)
 			strtcpy(deviceQuirks.deviceName, "Touch 2.0", sizeof(deviceQuirks.deviceName));
@@ -836,6 +876,7 @@ static void
 			strtcpy(deviceQuirks.deviceName, "Tolino Vision", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Vision", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Mark 6", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_KOBO_AURA_SE_R2:    // Aura SE r2 (star)
 			deviceQuirks.isKoboMk7 = true;
@@ -946,6 +987,7 @@ static void
 			strtcpy(deviceQuirks.deviceName, "Vision 5", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Arya", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Mark 7", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_KOBO_NIA:    // Nia (luna)
 			deviceQuirks.isKoboMk7         = true;
@@ -1150,6 +1192,7 @@ static void
 			strtcpy(deviceQuirks.deviceName, "Vision Color", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Monza Tolino", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Mark 13", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_KOBO_CLARA_BW:    // Clara B&W (Spa BW)
 			deviceQuirks.isMTK                      = true;
@@ -1190,6 +1233,7 @@ static void
 			strtcpy(deviceQuirks.deviceName, "Shine B&W", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Spa Tolino BW", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Mark 12", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_KOBO_CLARA_COLOUR:    // Clara Colour (Spa Colour)
 			deviceQuirks.hasColorPanel              = true;
@@ -1230,6 +1274,7 @@ static void
 			strtcpy(deviceQuirks.deviceName, "Shine Color", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Spa Tolino Colour", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Mark 12", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_KOBO_CLARA_BW_TPV:    // Clara B&W (Spa BW TPV)
 			deviceQuirks.isMTK                      = true;
@@ -1264,6 +1309,7 @@ static void
 			strtcpy(deviceQuirks.deviceName, "Shine 2HD", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Mainline", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Tolino", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_MAINLINE_TOLINO_SHINE_3:    // Tolino Shine 3 (Clara HD-ish)
 			deviceQuirks.isKoboMk7 = true;
@@ -1271,12 +1317,14 @@ static void
 			strtcpy(deviceQuirks.deviceName, "Shine 3", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Mainline", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Tolino", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_MAINLINE_TOLINO_VISION:    // Tolino Vision (Aura SE-ish, maybe?)
 			deviceQuirks.screenDPI = 212U;
 			strtcpy(deviceQuirks.deviceName, "Vision", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Mainline", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Tolino", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_MAINLINE_TOLINO_VISION_5:    // Tolino Vision 5 (Libra H2O-ish)
 			deviceQuirks.isKoboMk7    = true;
@@ -1287,6 +1335,7 @@ static void
 			strtcpy(deviceQuirks.deviceName, "Vision 5", sizeof(deviceQuirks.deviceName));
 			strtcpy(deviceQuirks.deviceCodename, "Mainline", sizeof(deviceQuirks.deviceCodename));
 			strtcpy(deviceQuirks.devicePlatform, "Tolino", sizeof(deviceQuirks.devicePlatform));
+			deviceQuirks.isTolino = true;
 			break;
 		case DEVICE_MAINLINE_GENERIC_IMX5:
 			// Generic fallback for i.MX5 devices on mainline kernels
@@ -1338,13 +1387,16 @@ static void
 	// Get the model from Nickel's version tag file...
 	FILE* fp = fopen("/mnt/onboard/.kobo/version", "re");
 	if (!fp) {
+		// Do log the actual error, in case it's something weird...
+		PFELOG("fopen: %m");
 		ELOG("Couldn't find a Kobo version tag (onboard unmounted or not using Nickel?)!");
 	} else {
 		// NOTE: I'm not entirely sure this will always have a fixed length, so, give ourselves a bit of room...
 		char   line[_POSIX_PATH_MAX] = { 0 };
 		size_t size                  = fread(line, sizeof(*line), sizeof(line) - 1U, fp);
-		fclose(fp);
 		if (size > 0) {
+			fclose(fp);
+
 			// The line/file should not contain a trailing LF, but, just in case...
 			if (line[size - 1U] == '\n') {
 				line[size - 1U] = '\0';
@@ -1361,7 +1413,12 @@ static void
 			//       no need to fall back to DTB identification, it's definitely not mainline.
 			return;
 		} else {
-			WARN("Failed to read the Kobo version tag (%zu)", size);
+			WARN("Failed to read the Kobo version tag (fread: %zu -> error? %s eof? %s)",
+			     size,
+			     ferror(fp) ? "Y" : "N",
+			     feof(fp) ? "Y" : "N");
+			fclose(fp);
+
 			// NOTE: Make it clear we failed to identify the device...
 			//       i.e., by passing DEVICE_INVALID instead of DEVICE_UNKNOWN, which we use to flag old !NTX devices.
 			// NOTE: This codepath can genuinely be reached if you're unlucky enough that a crash
