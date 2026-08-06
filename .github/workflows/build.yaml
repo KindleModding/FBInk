@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download toolchain
-      run: wget -q https://github.com/koreader/koxtoolchain/releases/download/2026.08/kobo.tar.zst -O - | tar -xzf - -C ~
+      run: wget -q https://github.com/koreader/koxtoolchain/releases/download/2026.08/kobo.tar.zst -O - | tar -xaf - -C ~
     - name: Export toolchain
       run: echo ~/x-tools/arm-kobo-linux-gnueabihf/bin >> $GITHUB_PATH
     - name: Checkout
